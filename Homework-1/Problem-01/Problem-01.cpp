@@ -6,10 +6,10 @@
 
 namespace GlobalConstants
 {
-	unsigned const MAX_ROW_COUNT = 300;
-	unsigned const MAX_COLUMN_COUNT = 30;
-	unsigned const MAX_COLUMN_CHAR_COUNT = 50;
-	unsigned const BUFFER_MAX_LENGTH = 1024;
+	unsigned const MAX_ROW_COUNT = 100;
+	unsigned const MAX_FIELD_COUNT = 15;
+	unsigned const MAX_FIELD_CHAR_COUNT = 50;
+	unsigned const BUFFER_MAX_LENGTH = 2048;
 	char const NEWLINE_CHARACTER = '\n';
 	char const SPACE_CHARACTER = ' ';
 	char const SPECIAL_CHARACTER = '*';
@@ -17,6 +17,17 @@ namespace GlobalConstants
 
 namespace UtilityFunctions
 {
+	bool containsNewline(char* buffer)
+	{
+		while (*buffer)
+		{
+			if (*buffer++ == '\n')
+				return true;
+		}
+
+		return false;
+	}
+
 	void unformatFile(std::ifstream& inFile, std::stringstream& ss)
 	{
 		if (!inFile.is_open())
@@ -55,6 +66,8 @@ namespace UtilityFunctions
 		return c >= '0' && c <= '9';
 	}
 
+
+
 	/*unsigned getNumberFromString(char* buffer)
 	{
 
@@ -76,7 +89,7 @@ namespace UtilityFunctions
 			if (*buffer == '#' && flag)
 			{
 				index++;
-				
+
 			}
 
 			index++;
@@ -85,114 +98,153 @@ namespace UtilityFunctions
 	}*/
 }
 
-char*** readToMatrix(std::ifstream& inFile)
+//typedef char Field[GlobalConstants::MAX_FIELD_CHAR_COUNT];
+class Field
 {
-	if (!inFile.is_open())
-		return nullptr;
+private:
+	char field[GlobalConstants::MAX_FIELD_CHAR_COUNT + 1] = "\0";
+	bool isHeader = false;
+public:
+	Field() = default;
+	Field(char* field, bool isHeader);
+	Field(char* field);
 
-	char*** matrix = new char** [GlobalConstants::MAX_ROW_COUNT];
-	char* buffer = new char[GlobalConstants::BUFFER_MAX_LENGTH];
+	void setField(char* field);
+	char* getField();
+	bool getIsHeader();
+};
 
-	std::stringstream ss;
-	UtilityFunctions::unformatFile(inFile, ss);
+Field::Field(char* field, bool isHeader)
+{
+	setField(field);
+	this->isHeader = isHeader;
+}
+Field::Field(char* field) : Field(field, false) {}
 
-	unsigned row = 0;
-	unsigned col = 0;
-	bool readingRow = false;
-
-	while (!ss.eof())
+void Field::setField(char* field)
+{
+	size_t size = strlen(field);
+	if (size > GlobalConstants::MAX_FIELD_CHAR_COUNT + 1)
 	{
-		ss.get();
-		ss.getline(buffer, GlobalConstants::BUFFER_MAX_LENGTH, '>');
+		strcpy(this->field, "\0");
+		return;
+	}
+
+	strcpy(this->field, field);
+}
+char* Field::getField()
+{
+	return this->field;
+}
+
+bool Field::getIsHeader()
+{
+	return this->isHeader;
+}
+
+typedef Field Row[GlobalConstants::MAX_FIELD_COUNT];
+
+class Table
+{
+public:
+	Row rows[GlobalConstants::MAX_ROW_COUNT];
+	size_t rowsCount = 0;
+	size_t colsCount = 0;
+	Table() = default;
+	void print();
+};
+
+Table parseFormatedFromFile(std::stringstream& ss, std::istream& ifs)
+{
+	Table table;
+	char buffer[GlobalConstants::BUFFER_MAX_LENGTH];
+	ifs.getline(buffer, GlobalConstants::BUFFER_MAX_LENGTH, '<');
+	bool isHeader = false;
+	size_t currRow = -1;
+	size_t currCol = -1;
+
+	while (!ifs.eof())
+	{
+		ifs.getline(buffer, GlobalConstants::BUFFER_MAX_LENGTH, '>'); //gets the html tag
 		if (strcmp(buffer, "tr") == 0)
 		{
-			if (readingRow)
-			{
-				row++;
-				readingRow = false;
-			}
-			else
-			{
-				readingRow = true;
-			}
-
-			matrix[row] = new char* [GlobalConstants::MAX_COLUMN_COUNT];
-			for (size_t i = 0; i < GlobalConstants::MAX_COLUMN_COUNT; i++)
-			{
-				matrix[row][i] = new char[GlobalConstants::MAX_COLUMN_CHAR_COUNT];
-			}
+			currRow++;
 		}
-		else if (strcmp(buffer, "tr") == 0 && readingRow)
+		else if (strcmp(buffer, "/tr") == 0)
 		{
-			row++;
-			readingRow = false;
-
+			currCol = -1;
 		}
 		else if (strcmp(buffer, "th") == 0)
 		{
-			ss.getline(buffer, GlobalConstants::BUFFER_MAX_LENGTH, '<');
-			UtilityFunctions::appendToBuffer(buffer);
-			//from character entity reference
-
-			strcpy(matrix[row][col++], buffer);
-			ss.getline(buffer, GlobalConstants::BUFFER_MAX_LENGTH, '>');
+			currCol++;
+			isHeader = true;
 		}
 		else if (strcmp(buffer, "td") == 0)
 		{
-			ss.getline(buffer, GlobalConstants::BUFFER_MAX_LENGTH, '<');
-
-			//from character entity reference
-
-			strcpy(matrix[row][col++], buffer);
-			ss.getline(buffer, GlobalConstants::BUFFER_MAX_LENGTH, '>');
+			currCol++;
+			isHeader = false;
 		}
+
+		ifs.getline(buffer, GlobalConstants::BUFFER_MAX_LENGTH, '<'); //gets the text between 2 tags
+		
+		if (UtilityFunctions::containsNewline(buffer))
+			continue;
+		Field field(buffer, isHeader);
+		Row& row = table.rows[currRow];
+		row[currCol] = field;
 	}
-
-	std::cout << ss.str();
-
-	delete[] buffer;
-	return matrix;
+	
+	return table;
 }
 
-void print(std::ifstream& inFile)
+Table parseFromFile(std::istream& ifs)
 {
-	char*** matrix = readToMatrix(inFile);
+	Table result;
+	char buffer[GlobalConstants::BUFFER_MAX_LENGTH];
+	std::stringstream ss;
 
+	ifs.getline(buffer, GlobalConstants::BUFFER_MAX_LENGTH, '\n');
+	std::cout << strlen(buffer);
+	if (strlen(buffer) == 7 && strcmp(buffer, "<table>") == 0) //formated html table
+	{
+		result = parseFormatedFromFile(ss, ifs);
+	}
+	else if (strlen(buffer) > 8) //unformated html table
+	{
+		
+	}
+
+	return result;
+}
+
+Table parseFromFile(const char* fileName)
+{
+	std::ifstream ifs(fileName);
+	if (!ifs.is_open())
+	{
+		return {};
+	}
+
+	return parseFromFile(ifs);
+}
+
+void Table::print() //To implement
+{
 	for (size_t i = 0; i < GlobalConstants::MAX_ROW_COUNT; i++)
 	{
 		std::cout << '|';
-		for (size_t j = 0; j < GlobalConstants::MAX_COLUMN_COUNT; j++)
+
+		for (size_t j = 0; j < GlobalConstants::MAX_FIELD_COUNT; j++)
 		{
-			if (matrix[i][j][0] == '*')
-			{
-				if (j + 1 == GlobalConstants::MAX_COLUMN_COUNT)
-					std::cout << std::setw(5) << matrix[i][j] << std::setw(5) << '*';
-				else
-					std::cout << std::setw(5) << matrix[i][j] << std::setw(5) << "*|";
-			}
-			else
-			{
-				if (j + 1 == GlobalConstants::MAX_COLUMN_COUNT)
-					std::cout << std::setw(5) << matrix[i][j] << std::setw(5);
-				else
-					std::cout << std::setw(5) << matrix[i][j] << std::setw(5) << '|';
-			}
+			std::cout << this->rows[i][j].getField();
 		}
+
 		std::cout << '|' << std::endl;
 	}
 }
 
 int main()
 {
-	//should read file path from console!!!!!!!!!!!!!!!!
-	//to validate if there is a table tag!!!
-	std::ifstream inFile("html-table.txt");
-	//std::ifstream inFile2("html-table-unformated.txt");
-	if (inFile.is_open())
-	{
-		//std::cout << "Formated table" << std::endl;
-		print(inFile);
-		//std::cout << std::endl << "Unformated table" << std::endl;
-		//print(inFile2);
-	}
+	Table table = parseFromFile("html-table.txt");
+	table.print();
 }
