@@ -8,7 +8,7 @@ namespace GlobalConstants
 class Song
 {
     char name[GlobalConstants::SONG_NAME_MAX];
-    int length;
+    int getFieldLength;
 
 };
 

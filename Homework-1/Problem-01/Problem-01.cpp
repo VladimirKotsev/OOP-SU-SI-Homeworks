@@ -27,7 +27,6 @@ namespace UtilityFunctions
 
 		return false;
 	}
-
 	void decodeEntity(char* str)
 	{
 		char* ptr = str;
@@ -53,7 +52,6 @@ namespace UtilityFunctions
 
 		*str = '\0'; // Null-terminate the modified string
 	}
-
 	void removeWhitespaces(char* str)
 	{
 		char* ptr = str;
@@ -75,40 +73,8 @@ namespace UtilityFunctions
 			*ptr = '\0'; // Null-terminate the string if there were leading spaces
 		}
 	}
-
-
-
-	/*unsigned getNumberFromString(char* buffer)
-	{
-
-	}
-
-	char decodeCharacters(char* buffer)
-	{
-		if(!buffer)
-			return;
-
-		bool flag = false;
-		unsigned index = 0;
-		while (*buffer)
-		{
-			if (*buffer == '&')
-			{
-				flag = true;
-			}
-			if (*buffer == '#' && flag)
-			{
-				index++;
-
-			}
-
-			index++;
-			*buffer++;
-		}
-	}*/
 }
 
-//typedef char Field[GlobalConstants::MAX_FIELD_CHAR_COUNT];
 class Field
 {
 private:
@@ -116,61 +82,140 @@ private:
 	bool isHeader = false;
 public:
 	Field() = default;
-	Field(char* field, bool isHeader);
-	Field(char* field);
-
-	void setField(char* field);
-	char* getField();
-	bool getIsHeader();
-	size_t length();
-};
-
-size_t Field::length()
-{
-	return strlen(this->getField());
-}
-Field::Field(char* field, bool isHeader)
-{
-	setField(field);
-	this->isHeader = isHeader;
-}
-Field::Field(char* field) : Field(field, false) {}
-
-void Field::setField(char* field)
-{
-	size_t size = strlen(field);
-	if (size > GlobalConstants::MAX_FIELD_CHAR_COUNT + 1)
+	Field(char* field, bool isHeader)
 	{
-		strcpy(this->field, "\0");
-		return;
+		setField(field);
+		this->isHeader = isHeader;
+	}
+	Field(char* field) : Field(field, false) {}
+
+	size_t getFieldLength()
+	{
+		return strlen(this->getField());
 	}
 
-	strcpy(this->field, field);
-}
-char* Field::getField()
-{
-	return this->field;
-}
-bool Field::getIsHeader()
-{
-	return this->isHeader;
-}
+	void setField(char* field)
+	{
+		size_t size = strlen(field);
+		if (size > GlobalConstants::MAX_FIELD_CHAR_COUNT + 1)
+		{
+			strcpy(this->field, "\0");
+			return;
+		}
 
-typedef Field Row[GlobalConstants::MAX_FIELD_COUNT];
-class Table
+		strcpy(this->field, field);
+	}
+	const char* getField() const
+	{
+		return this->field;
+	}
+	bool getIsHeader() const
+	{
+		return this->isHeader;
+	}
+	void setIsHeader(bool isHeader)
+	{
+		this->isHeader = isHeader;
+	}
+};
+
+struct Row
 {
+	Field fields[GlobalConstants::MAX_FIELD_COUNT];
+};
+
+struct Table
+{
+private:		
+	void findMaxCharactersForColumn() //calculates the max length for each column
+	{
+		for (size_t i = 0; i < GlobalConstants::MAX_ROW_COUNT; i++)
+		{
+			for (size_t j = 0; j < GlobalConstants::MAX_FIELD_COUNT; j++)
+			{
+				if (this->rows[i].fields[j].getFieldLength() > this->maxLengths[j])
+					maxLengths[j] = this->rows[i].fields[j].getFieldLength();
+			}
+		}
+	}
 public:
 	Row rows[GlobalConstants::MAX_ROW_COUNT];
 	size_t rowsCount = 0;
 	size_t colsCount = 0;
 	unsigned maxLengths[GlobalConstants::MAX_FIELD_COUNT]{ 0 };
-	void print();
-	void findMaxCharactersForColumn();
-	void remove(int rowIndex);
-	void add(int rowIndex, char** values);
-	void edit(int rowIndex, int colIndex, char* newValue);
-	void swapRows(Row& row1, Row& row2);
 	Table() = default;
+
+	void remove(int rowIndex)
+	{
+		if (rowIndex < 0 || rowIndex >= this->rowsCount)
+		{
+			std::cout << "Invalid index" << std::endl;
+			return;
+		}
+
+		this->rowsCount--;
+		for (int i = rowIndex; i < this->rowsCount; ++i) //shift rows backward by 1
+			this->rows[i] = this->rows[i + 1];
+	}
+	void add(int rowIndex, char** values, size_t size)
+	{
+		if (!values)
+		{
+			std::cout << "Invalid values to add" << std::endl;
+			return;
+		}
+		if (rowIndex < 0 || rowIndex >= this->rowsCount + 1)
+		{
+			std::cout << "Invalid index" << std::endl;
+			return;
+		}
+
+		this->rowsCount++;
+		for (int i = this->rowsCount; i >= rowIndex; i--) //shift rows forward by 1
+			this->rows[i] = this->rows[i - 1];
+
+		Row row;
+		for (size_t i = 0; i < size; i++)
+			row.fields[i].setField(values[i]);
+
+		this->rows[rowIndex] = row;
+	}
+	void edit(int rowIndex, int colIndex, char* newValue)
+	{
+		this->rows[rowIndex].fields[colIndex].setField(newValue);
+	}
+	void print()
+	{
+		this->findMaxCharactersForColumn();
+		for (size_t i = 0; i < this->rowsCount; i++)
+		{
+			std::cout << '|';
+
+			for (size_t j = 0; j < this->colsCount; j++)
+			{
+				if (this->rows[i].fields[j].getIsHeader())
+					std::cout << '*';
+				else
+					std::cout << ' ';
+
+				//calculates the offset for table
+				int offset = this->maxLengths[j] - strlen(this->rows[i].fields[j].getField()); 
+
+				std::cout << this->rows[i].fields[j].getField();
+				std::cout << std::setw(offset + 1);
+
+				if (this->rows[i].fields[j].getIsHeader())
+					std::cout << '*';
+				else
+					std::cout << ' ';
+
+				if (j != this->colsCount - 1)
+					std::cout << '|';
+			}
+
+			std::cout << '|' << std::endl;
+		}
+	}
 };
 
 void convertToUnformated(std::stringstream& ss, std::istream& ifs)
@@ -185,19 +230,50 @@ void convertToUnformated(std::stringstream& ss, std::istream& ifs)
 	}
 }
 
-Table parseFromFile(std::istream& ifs)
+void parseToFile(std::ostream& ofs, const Table& table)
 {
-	Table table;
+	ofs << "<table>\n";
+	for (size_t i = 0; i < table.rowsCount; i++)
+	{
+		ofs << "  <tr>\n";
+		for (size_t j = 0; j < table.colsCount; j++)
+		{
+			const char* field = table.rows[i].fields[j].getField();
+
+			//checks if it is header and if empty don't print
+			if (table.rows[i].fields[j].getIsHeader() && strcmp(field, "") != 0) 
+				ofs << "    <th>" << field << "</th>\n";
+			else if (!table.rows[i].fields[j].getIsHeader() && strcmp(field, "") != 0)
+				ofs << "    <td>" << field << "</td>\n";
+		}
+		ofs << "  </tr>\n";
+	}
+	ofs << "<table>\n";
+}
+void parseToFile(const char* fileName, const Table& table)
+{
+	std::ofstream ofs(fileName);
+	if (!ofs.is_open())
+	{
+		std::cout << "File to write is not open";
+		return;
+	}
+
+	parseToFile(ofs, table);
+	ofs.close();
+}
+
+void parseFromFile(std::ifstream& ifs, Table& table)
+{
 	char buffer[GlobalConstants::BUFFER_MAX_LENGTH];
 
-	ifs.getline(buffer, GlobalConstants::BUFFER_MAX_LENGTH, '\n');
 	bool isHeader = false;
-	size_t currRow = -1;
-	size_t currCol = -1;
+	int currRow = -1;
+	int currCol = -1;
 	std::stringstream ss;
 
 	convertToUnformated(ss, ifs);
-	ss.ignore();
+	ss.get();
 	while (!ss.eof())
 	{
 		ss.getline(buffer, GlobalConstants::BUFFER_MAX_LENGTH, '>'); //gets the html tag
@@ -208,8 +284,8 @@ Table parseFromFile(std::istream& ifs)
 		}
 		else if (strcmp(buffer, "/tr") == 0)
 		{
-			if (currCol > table.colsCount)
-				table.colsCount = currCol;
+			if (currCol + 1 > table.colsCount)
+				table.colsCount = currCol + 1;
 
 			currCol = -1;
 		}
@@ -230,101 +306,26 @@ Table parseFromFile(std::istream& ifs)
 			continue;
 
 		UtilityFunctions::decodeEntity(buffer);
-		Field field(buffer, isHeader);
-		Row& row = table.rows[currRow];
-		row[currCol] = field;
+		table.rows[currRow].fields[currCol].setIsHeader(isHeader);
+		table.rows[currRow].fields[currCol].setField(buffer);
 	}
 
-	return table;
+	ifs.close();
 }
-
-Table parseFromFile(const char* fileName)
+Table parseFromFile(const char* fileName, Table& table)
 {
 	std::ifstream ifs(fileName);
 	if (!ifs.is_open())
-	{
-		return {};
-	}
+		return table;
 
-	return parseFromFile(ifs);
-}
-
-void Table::findMaxCharactersForColumn()
-{
-	for (size_t i = 0; i < GlobalConstants::MAX_ROW_COUNT; i++)
-	{
-		for (size_t j = 0; j < GlobalConstants::MAX_FIELD_COUNT; j++)
-		{
-			if (this->rows[i][j].length() > this->maxLengths[j])
-				maxLengths[j] = this->rows[i][j].length();
-		}
-	}
-}
-
-void Table::swapRows(Row& row1, Row& row2)
-{
-	row1 = row2;
-}
-
-void Table::remove(int rowIndex)
-{
-	if (rowIndex < 0 || rowIndex >= this->rowsCount)
-	{
-		std::cout << "Invalid index\n";
-		return;
-	}
-
-	this->rowsCount--;
-	for (int i = rowIndex; i < this->rowsCount; ++i)
-	{
-		this->swapRows(this->rows[i], this->rows[i + 1]);
-	}
-}
-
-void Table::add(int rowIndex, char** values)
-{
-
-}
-
-void Table::edit(int rowIdnex, int colIndex, char* newValue)
-
-void Table::print() //To implement
-{
-	this->findMaxCharactersForColumn();
-	for (size_t i = 0; i < this->rowsCount; i++)
-	{
-		std::cout << '|';
-
-		for (size_t j = 0; j < this->colsCount; j++)
-		{
-			if (this->rows[i][j].getIsHeader())
-				std::cout << '*';
-			else
-				std::cout << ' ';
-
-			int offset = this->maxLengths[j] - strlen(this->rows[i][j].getField());
-
-			std::cout << this->rows[i][j].getField();
-			std::cout << std::setw(offset + 1);
-
-			if (this->rows[i][j].getIsHeader())
-				std::cout << '*';
-			else
-				std::cout << ' ';
-
-			if (j != this->colsCount - 1)
-				std::cout << '|';
-		}
-
-		std::cout << '|' << std::endl;
-	}
+	parseFromFile(ifs, table);
+	return table;
 }
 
 int main()
 {
-	Table table = parseFromFile("html-table.txt");
-	table.print();
-	std::cout << std::endl;
-	Table table1 = parseFromFile("html-table-unformated.txt");
+	Table table;
+	parseFromFile("html-table-unformated.txt", table);
+
 	table.print();
 }
