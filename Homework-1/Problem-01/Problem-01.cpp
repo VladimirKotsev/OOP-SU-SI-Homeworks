@@ -114,8 +114,27 @@ Table parseFromFile(const char* fileName, Table& table)
 
 int main()
 {
+	//commands from console!!
+	//editing at 3, 3 with empty space!!
 	Table table;
-	parseFromFile("html-table-unformated.txt", table);
+	char* fileName;
+	std::cin >> fileName;
+	parseFromFile(fileName, table);
+
+	std::cout << "'Exit' to exit" << std::endl;
+	char* command;
+	std::cin >> command;
+	while (strcmp(command, "Exit") != 0)
+	{
+		if (strcmp(command, "print") == 0)
+			table.print();
+		else if (strcmp(command, "add") == 0)
+		{
+
+		}
+		
+	}
+
 
 	table.print();
 }

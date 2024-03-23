@@ -4,6 +4,7 @@
 #include "GlobalConstants.h"
 #include "Row.h"
 #include "Table.h"
+#include "Utility.h"
 
 void Table::findMaxCharactersForColumn() //calculates the max length for each column
 {
@@ -22,7 +23,7 @@ void Table::remove(int rowIndex)
 {
 	if (rowIndex < 0 || rowIndex >= this->rowsCount)
 	{
-		std::cout << "Invalid index" << std::endl;
+		std::cout << ErrorMessages::INVALID_TABLE_ROW << std::endl;
 		return;
 	}
 
@@ -34,12 +35,12 @@ void Table::add(int rowIndex, char** values, size_t size)
 {
 	if (!values)
 	{
-		std::cout << "Invalid values to add" << std::endl;
+		std::cout << ErrorMessages::INVALID_TABLE_VALUES << std::endl;
 		return;
 	}
-	if (rowIndex < 0 || rowIndex >= this->rowsCount + 1)
+	if (rowIndex < 1 || rowIndex > this->rowsCount)
 	{
-		std::cout << "Invalid index" << std::endl;
+		std::cout << ErrorMessages::INVALID_TABLE_ROW << std::endl;
 		return;
 	}
 
@@ -55,7 +56,18 @@ void Table::add(int rowIndex, char** values, size_t size)
 }
 void Table::edit(int rowIndex, int colIndex, char* newValue)
 {
-	this->rows[rowIndex].fields[colIndex].setField(newValue);
+	if (rowIndex < 1 || rowIndex > this->rowsCount)
+	{
+		std::cout << ErrorMessages::INVALID_TABLE_ROW << std::endl;
+		return;
+	}
+	if (colIndex < 1 || colIndex > this->colsCount)
+	{
+		std::cout << ErrorMessages::INVALID_TABLE_COL << std::endl;
+		return;
+	}
+
+	this->rows[rowIndex - 1].fields[colIndex - 1].setField(newValue);
 }
 void Table::print()
 {

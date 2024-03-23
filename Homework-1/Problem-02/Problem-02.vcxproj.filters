@@ -18,5 +18,34 @@
     <ClCompile Include="Problem-02.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Song.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Playlist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Song.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalConstants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Enums.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Playlist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
