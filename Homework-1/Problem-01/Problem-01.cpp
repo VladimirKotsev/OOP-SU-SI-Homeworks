@@ -2,10 +2,10 @@
 #include <sstream>
 
 #include "GlobalConstants.h"
-#include "Utility.h"
 #include "Field.h"
 #include "Row.h"
 #include "Table.h"
+#include "Utility.h"
 
 void convertToUnformated(std::stringstream& ss, std::istream& ifs)
 {
@@ -117,12 +117,13 @@ int main()
 	//commands from console!!
 	//editing at 3, 3 with empty space!!
 	Table table;
-	char* fileName;
+	char fileName[GlobalConstants::BUFFER_MAX_LENGTH];
+	std::cout << "Enter file name: ";
 	std::cin >> fileName;
 	parseFromFile(fileName, table);
 
 	std::cout << "'Exit' to exit" << std::endl;
-	char* command;
+	char command[GlobalConstants::BUFFER_MAX_LENGTH];
 	std::cin >> command;
 	while (strcmp(command, "Exit") != 0)
 	{
@@ -130,11 +131,42 @@ int main()
 			table.print();
 		else if (strcmp(command, "add") == 0)
 		{
-
+			int row;
+			size_t cols;
+			char** values = new char*[GlobalConstants::MAX_FIELD_COUNT];
+			std::cout << "Enter at row to add: ";
+			std::cin >> row;
+			std::cout << "Enter numbers of columns: ";
+			std::cin >> cols;
+				std::cin.ignore();
+			for (size_t i = 0; i < cols; i++)
+			{
+				values[i] = new char[GlobalConstants::MAX_FIELD_CHAR_COUNT];
+				std::cout << "Enter a value at col " << i + 1 << ": ";
+				std::cin.getline(values[i], GlobalConstants::MAX_FIELD_CHAR_COUNT);
+			}
+			table.add(row, values, cols);
+			delete[] values;
+		}
+		else if (strcmp(command, "edit") == 0)
+		{
+			std::cout << "Enter row, col and new value: ";
+			int row, col;
+			char val[GlobalConstants::MAX_FIELD_CHAR_COUNT];
+			std::cin >> row >> col >> val;
+			table.edit(row, col, val);
+		}
+		else if (strcmp(command, "remove") == 0)
+		{
+			int row;
+			std::cout << "Enter row to remove: ";
+			std::cin >> row;
+			table.remove(row);
 		}
 		
+		std::cin >> command;
 	}
 
-
+	//parseToFile(fileName, table);
 	table.print();
 }

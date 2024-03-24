@@ -38,21 +38,22 @@ const void Playlist::printAll() const
 		this->songs[i].print();
 }
 
-const Song Playlist::findSongByName(const char* name) const
+const Song& Playlist::findSongByName(const char* name) const
 {
+	if (!name)
+	{
+		std::cout << ErrorMessages::SONG_NAME_INVALID << std::endl;
+		return Song();
+	}
 	for (size_t i = 0; i < this->songsCount; i++)
 	{
 		if (strcmp(this->songs[i].getName(), name) == 0)
-		{
-			this->songs[i].print();
 			return this->songs[i];
-		}
 	}
 
-	std::cout << "Song not found!" << std::endl;
+	std::cout << ErrorMessages::UNKNOWN_SONG << std::endl;
 	return Song();
 }
-
 const Song* Playlist::findSongsByGenre(const char genre) const
 {
 	Song songs[GlobalConstants::MAX_SONGS_PLAYLIST];
@@ -65,10 +66,7 @@ const Song* Playlist::findSongsByGenre(const char genre) const
 			int currGenre = (int)this->songs[i].getGenres()[j];
 			int genreToFind = (int)this->getGenreFromChar(genre);
 			if (currGenre == genreToFind)
-			{
-				this->songs[i].print();
 				songs[index++] = this->songs[i];
-			}
 		}
 	}
 	return songs;
@@ -104,52 +102,84 @@ void Playlist::sortSongsByName()
 }
 void Playlist::mixSongByBits(const char* name, int k)
 {
-	Song song = this->findSongByName(name);
-	if (strcmp(song.getName(), (char*)"\0") == 0)
+	if (!name)
 	{
 		std::cout << ErrorMessages::SONG_NAME_INVALID;
 		return;
 	}
+	Song song = this->findSongByName(name);
+	const char* currNotes = song.getNotes();
+	size_t notesLength = strlen(currNotes);
 
-	const char* notes = song.getNotes();
-	char* newNotes = new char[GlobalConstants::BUFFER_SIZE + 1];
-	unsigned index = 0;
-	while (*notes)
+	char* result = new char[notesLength + 1];
+	unsigned char mask = 1 << k - 1;
+	for (size_t i = 0; i < GlobalConstants::BIT_SIZE; i++)
 	{
-		char max = *notes | (1 << k);
-		*notes++;
-		newNotes[index++] = max;
+		mask <<= 1;
+		mask |= 1;
+		mask <<= k - 1;
 	}
 
-	newNotes[index] = '\0';
-	song.setNotes(newNotes);
-	delete[] newNotes;
+	currNotes += notesLength - 1;
+	int index = 0;
+	while (index < notesLength)
+	{
+		char c = *currNotes;
+
+		result[index] = c | mask;
+		mask <<= 1;
+
+		if (index++ % k == 0)
+			mask |= 1;
+
+		currNotes--;
+	}
+
+	for (size_t i = 0; i < notesLength / 2; i++)
+	{
+		std::swap(result[i], result[notesLength - i - 1]);
+	}
+
+	result[index] = '\0';
+
+	song.setNotes(result);
+	delete[] result;
 }
 void Playlist::mixSongs(const char* songName1, const char* songName2)
 {
-	Song song1 = this->findSongByName(songName1);
-	Song song2 = this->findSongByName(songName2);
-	if (strcmp(song1.getName(), (char *)"\0") == 0 && strcmp(song2.getName(), (char*)"\0") == 0)
-	{
-		std::cout << ErrorMessages::SONG_NAME_INVALID;
+	if (!songName1 || !songName2)
 		return;
-	}
 
-	unsigned index= 0;
-	const char* s1Notes = song1.getNotes();
-	const char* s2Notes = song2.getNotes();
-	char* notesToSave = new char[GlobalConstants::BUFFER_SIZE + 1];
-	while (*(s1Notes + index) && *(s2Notes + index))
+	Song& first = this->findSongByName(songName1);
+	const Song second = this->findSongByName(songName2);
+
+	const char* song1Notes = first.getNotes();
+	const char* song2Notes = second.getNotes();
+
+	char* result = new char[GlobalConstants::SONG_NOTES_MAX + 1];
+	int currentIndex = 0;
+
+	while ((*song1Notes) && (*song2Notes))
 	{
-		int mask = (int)(*(s1Notes + index)) ^ (int)(*(s2Notes + index));
-		notesToSave[index] = (char)mask;
+		char firstSymbol = *song1Notes;
+		char secondSymbol = *song2Notes;
 
-		index++;
+		int mask = (int)firstSymbol ^ (int)secondSymbol;
+		result[currentIndex++] = (int)firstSymbol ^ (int)secondSymbol;
+
+		song1Notes++;
+		song2Notes++;
 	}
-	notesToSave[index] = '\0';
-	std::cout << notesToSave;
-	song1.setNotes(notesToSave);
-	delete[] notesToSave;
+
+	while ((*song1Notes))
+	{
+		result[currentIndex++] = *song1Notes;
+		song1Notes++;
+	}
+	result[currentIndex] = '\0';
+
+	first.setNotes(result);
+	delete[] result;
 }
 
 const void Playlist::saveContentToFile(const char* songName, const char* fileName)

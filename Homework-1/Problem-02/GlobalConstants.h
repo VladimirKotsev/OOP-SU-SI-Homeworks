@@ -10,6 +10,7 @@ namespace GlobalConstants
     const unsigned MAX_SONGS_PLAYLIST = 30;
     const int BUFFER_SIZE = 256;
     const unsigned MAX_GENRES_PER_SONG = 5;
+    const unsigned BIT_SIZE = 8;
 
     const unsigned ROCK_GENRE_NUMBER = 1;
     const unsigned POP_GENRE_NUMBER = 2;

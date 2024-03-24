@@ -16,10 +16,12 @@ int main()
 
 	Playlist p;
 	p.addSong("Song 1", 0, 1, 5, (char*)"p", "song1.txt");
-	//p.addSong("Song 2", 0, 1, 55, (char*)"rp", "song2.txt");
+	p.addSong("Song 2", 0, 1, 55, (char*)"rp", "song2.txt");
 
-	p.mixSongByBits("Song 1", 3);
-	p.printAll();
+	/*p.mixSongByBits("Song 1", 3);
+	p.printAll();*/
+
+	//p.saveContentToFile("Song 1", "song3.dat");
 
 	//p.printAll();
 	//// Song 2, 00:01:55, Pop&Rock
@@ -39,8 +41,8 @@ int main()
 	//p.findSongsByGenre('r');
 	// Song 2, 00:01:55, Pop&Rock
 
-	//p.mixSongs("Song 1", "Song 2");
-	//p.saveContentToFile("Song 1", "song3.dat");
+	p.mixSongs("Song 1", "Song 2");
+	p.saveContentToFile("Song 1", "song3.dat");
 	// съдържание на song3.dat: “S” //0000 0011 
 
 }

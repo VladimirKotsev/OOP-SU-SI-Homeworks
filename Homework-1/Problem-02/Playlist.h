@@ -14,7 +14,7 @@ public:
 	void addSong(Song song);
 	void addSong(const char* name, unsigned hours, unsigned minutes, unsigned seconds, char* genre, const char* fileName);
 	const void printAll() const;
-	const Song findSongByName(const char* name) const;
+	const Song& findSongByName(const char* name) const;
 	const Song* findSongsByGenre(const char genre) const;
 	void mixSongs(const char* songName1, const char* songName2);
 	void mixSongByBits(const char* name, int k);

@@ -1,12 +1,5 @@
 #pragma once
 
-namespace ErrorMessages
-{
-	const char* INVALID_TABLE_ROW = "Invalid table row";
-	const char* INVALID_TABLE_COL = "Invalid table col";
-	const char* INVALID_TABLE_VALUES = "Invalid values to add";
-}
-
 namespace UtilityFunctions
 {
 	bool containsNewline(char* buffer)

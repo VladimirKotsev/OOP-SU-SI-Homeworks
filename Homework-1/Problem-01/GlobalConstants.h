@@ -10,3 +10,10 @@ namespace GlobalConstants
 	char const SPACE_CHARACTER = ' ';
 	char const SPECIAL_CHARACTER = '*';
 }
+
+namespace ErrorMessages
+{
+	const char INVALID_TABLE_ROW[] = "Invalid table row";
+	const char INVALID_TABLE_COL[] = "Invalid table col";
+	const char INVALID_TABLE_VALUES[] = "Invalid values to add";
+}

@@ -4,13 +4,12 @@
 #include "GlobalConstants.h"
 #include "Row.h"
 #include "Table.h"
-#include "Utility.h"
 
 void Table::findMaxCharactersForColumn() //calculates the max length for each column
 {
-	for (size_t i = 0; i < GlobalConstants::MAX_ROW_COUNT; i++)
+	for (size_t i = 0; i < this->rowsCount; i++)
 	{
-		for (size_t j = 0; j < GlobalConstants::MAX_FIELD_COUNT; j++)
+		for (size_t j = 0; j < this->colsCount; j++)
 		{
 			//gets the column max length and places in array
 			if (this->rows[i].fields[j].getFieldLength() > this->maxLengths[j])
@@ -21,14 +20,16 @@ void Table::findMaxCharactersForColumn() //calculates the max length for each co
 
 void Table::remove(int rowIndex)
 {
-	if (rowIndex < 0 || rowIndex >= this->rowsCount)
+	this->findMaxCharactersForColumn();
+	if (rowIndex < 1 || rowIndex > this->rowsCount)
 	{
 		std::cout << ErrorMessages::INVALID_TABLE_ROW << std::endl;
 		return;
 	}
 
 	this->rowsCount--;
-	for (int i = rowIndex; i < this->rowsCount; ++i) //shift rows backward by 1
+	this->maxLengths[rowIndex - 1] = 0;
+	for (int i = rowIndex - 1; i < this->rowsCount; i++) //shift rows backward by 1
 		this->rows[i] = this->rows[i + 1];
 }
 void Table::add(int rowIndex, char** values, size_t size)
@@ -53,6 +54,7 @@ void Table::add(int rowIndex, char** values, size_t size)
 		row.fields[i].setField(values[i]);
 
 	this->rows[rowIndex] = row;
+	this->findMaxCharactersForColumn();
 }
 void Table::edit(int rowIndex, int colIndex, char* newValue)
 {
@@ -68,6 +70,7 @@ void Table::edit(int rowIndex, int colIndex, char* newValue)
 	}
 
 	this->rows[rowIndex - 1].fields[colIndex - 1].setField(newValue);
+	this->maxLengths[colIndex - 1] = strlen(newValue);
 }
 void Table::print()
 {
