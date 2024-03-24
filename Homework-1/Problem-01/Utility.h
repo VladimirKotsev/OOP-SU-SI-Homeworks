@@ -37,10 +37,24 @@ namespace UtilityFunctions
 
 		*str = '\0'; // Null-terminate the modified string
 	}
+	bool areOnlySpaces(char* str)
+	{
+		if (strlen(str) == 0)
+			return true;
+		while (*str)
+		{
+			if (*str != ' ' && *str != '\n')
+				return false;
+			*str++;
+		}
+
+		return true;
+	}
 	void removeWhitespaces(char* str)
 	{
 		char* ptr = str;
 		char* startPtr = nullptr;
+		bool isTagOpen = true;
 		while (*str)
 		{
 			if (*str != ' ' || startPtr)

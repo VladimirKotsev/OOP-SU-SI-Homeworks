@@ -1,5 +1,6 @@
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 #include "GlobalConstants.h"
 #include "Field.h"
@@ -13,9 +14,20 @@ void convertToUnformated(std::stringstream& ss, std::istream& ifs)
 
 	while (!ifs.eof())
 	{
-		ifs.getline(buffer, GlobalConstants::BUFFER_MAX_LENGTH);
-		UtilityFunctions::removeWhitespaces(buffer);
+		ifs.getline(buffer, GlobalConstants::BUFFER_MAX_LENGTH, '>');
 		ss.write(buffer, strlen(buffer));
+		ss.write(">", 1);
+		//UtilityFunctions::removeWhitespaces(buffer);
+		ifs.getline(buffer, GlobalConstants::BUFFER_MAX_LENGTH, '<');
+		if (UtilityFunctions::areOnlySpaces(buffer))
+		{
+			ss.write("<", 1);
+			continue;
+		}
+		ss.write(buffer, strlen(buffer));
+		//ss.write(">", 1);
+		ss.write("<", 1);
+		//ss.write(buffer, strlen(buffer));
 	}
 }
 
@@ -30,7 +42,7 @@ void parseToFile(std::ostream& ofs, const Table& table)
 			const char* field = table.rows[i].fields[j].getField();
 
 			//checks if it is header and if empty don't print
-			if (table.rows[i].fields[j].getIsHeader() && strcmp(field, "") != 0) 
+			if (table.rows[i].fields[j].getIsHeader() && strcmp(field, "") != 0)
 				ofs << "    <th>" << field << "</th>\n";
 			else if (!table.rows[i].fields[j].getIsHeader() && strcmp(field, "") != 0)
 				ofs << "    <td>" << field << "</td>\n";
@@ -133,12 +145,12 @@ int main()
 		{
 			int row;
 			size_t cols;
-			char** values = new char*[GlobalConstants::MAX_FIELD_COUNT];
+			char** values = new char* [GlobalConstants::MAX_FIELD_COUNT];
 			std::cout << "Enter at row to add: ";
 			std::cin >> row;
 			std::cout << "Enter numbers of columns: ";
 			std::cin >> cols;
-				std::cin.ignore();
+			std::cin.ignore();
 			for (size_t i = 0; i < cols; i++)
 			{
 				values[i] = new char[GlobalConstants::MAX_FIELD_CHAR_COUNT];
@@ -163,10 +175,10 @@ int main()
 			std::cin >> row;
 			table.remove(row);
 		}
-		
+
 		std::cin >> command;
 	}
 
-	//parseToFile(fileName, table);
 	table.print();
+	parseToFile(fileName, table);
 }

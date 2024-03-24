@@ -162,6 +162,7 @@ const void Song::print() const //име, продължителност във �
 {
 	std::cout << "Song: " << this->getName() << ", ";
 	this->duration.print();
+	std::cout << ", ";
 	this->printGenres();
 }
 

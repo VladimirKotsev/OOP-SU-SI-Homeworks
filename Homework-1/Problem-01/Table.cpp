@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <iomanip>
 
 #include "GlobalConstants.h"
@@ -46,7 +47,7 @@ void Table::add(int rowIndex, char** values, size_t size)
 	}
 
 	this->rowsCount++;
-	for (int i = this->rowsCount; i >= rowIndex; i--) //shift rows forward by 1
+	for (int i = this->rowsCount - 1; i >= rowIndex; i--) //shift rows forward by 1
 		this->rows[i] = this->rows[i - 1];
 
 	Row row;

@@ -4,6 +4,52 @@
 #include "GlobalConstants.h"
 #include "Utility.h"
 
+const int Playlist::countTrailingZeros(unsigned char value) const
+{
+	int count = 0;
+	while ((value & 1) == 0)
+	{
+		++count;
+		value >>= 1;
+	}
+	return count;
+}
+
+const int Playlist::countLeadingZeros(unsigned char value) const
+{
+	int count = 0;
+	while ((value & (1 << 7)) == 0)
+	{
+		++count;
+		value <<= 1;
+	}
+	return count;
+}
+
+const void Playlist::getNextMask(unsigned char mask, unsigned char &resultMask, int k) const
+{
+	resultMask = 1 << k - 1;
+	for (size_t i = 0; i < 8; i++)
+	{
+		resultMask <<= 1;
+		resultMask |= 1;
+		resultMask <<= k - 1;
+	}
+
+	int leadingZeros = countLeadingZeros(mask);
+	for (size_t i = 0; i < 8; i++)
+	{
+		int trailingZeros = countTrailingZeros(resultMask);
+
+		if (leadingZeros + trailingZeros == k - 1)
+			break;
+
+		resultMask <<= 1;
+		if (trailingZeros + 1 == k)
+			resultMask |= 1;
+	}
+}
+
 const Genre Playlist::getGenreFromChar(char c) const
 {
 	Genre genre;
@@ -38,12 +84,13 @@ const void Playlist::printAll() const
 		this->songs[i].print();
 }
 
-const Song& Playlist::findSongByName(const char* name) const
+Song& Playlist::findSongByName(const char* name)
 {
 	if (!name)
 	{
 		std::cout << ErrorMessages::SONG_NAME_INVALID << std::endl;
-		return Song();
+		Song song;
+		return song;
 	}
 	for (size_t i = 0; i < this->songsCount; i++)
 	{
@@ -52,7 +99,8 @@ const Song& Playlist::findSongByName(const char* name) const
 	}
 
 	std::cout << ErrorMessages::UNKNOWN_SONG << std::endl;
-	return Song();
+	Song song;
+	return song;
 }
 const Song* Playlist::findSongsByGenre(const char genre) const
 {
@@ -107,7 +155,7 @@ void Playlist::mixSongByBits(const char* name, int k)
 		std::cout << ErrorMessages::SONG_NAME_INVALID;
 		return;
 	}
-	Song song = this->findSongByName(name);
+	Song& song = this->findSongByName(name);
 	const char* currNotes = song.getNotes();
 	size_t notesLength = strlen(currNotes);
 
@@ -127,11 +175,10 @@ void Playlist::mixSongByBits(const char* name, int k)
 		char c = *currNotes;
 
 		result[index] = c | mask;
-		mask <<= 1;
+		
+		this->getNextMask(mask, mask, k);
 
-		if (index++ % k == 0)
-			mask |= 1;
-
+		index++;
 		currNotes--;
 	}
 
@@ -187,7 +234,9 @@ const void Playlist::saveContentToFile(const char* songName, const char* fileNam
 	std::ofstream ofs(fileName);
 	if (!ofs.is_open() || !songName)
 		return;
+
 	Song song = this->findSongByName(songName);
-	ofs.write(song.getNotes(), strlen(song.getNotes()));
+	const char* notes = song.getNotes();
+	ofs.write(notes, strlen(notes));
 	ofs.close();
 }
