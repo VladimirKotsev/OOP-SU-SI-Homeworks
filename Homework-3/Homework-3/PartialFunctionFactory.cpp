@@ -1,33 +1,36 @@
+#include <fstream>
+#include <sstream>
+
 #include "PartialFunctionFactory.h"
-#include "PartialByCriteria.h"
+#include "PartialByCriteria.hpp"
 #include "MaximumPartial.h"
 #include "MinimumPartial.h"
 #include "BaseFunctional.h"
 #include "BooleanFunctional.h"
 #include "DefinedFunctional.h"
 #include "UndefinedFunctional.h"
-#include <fstream>
+#include "Utility.h"
 
 PartialFunction* PartialFunctionFactory::createFunction(const char* filename)
 {
 	if (!filename)
 		throw std::invalid_argument("File name cannot be null pointer!");
 
-	std::ifstream is(filename, std::ios::binary | std::ios::in);
+	std::ifstream ifs(filename, std::ios::binary | std::ios::in);
 
-	if (!is.is_open())
+	if (!ifs.is_open())
 		throw std::runtime_error("File not found or cannot be open!");
 
 	uint16_t N;
 	uint16_t T;
 
-	is.read((char*)&N, sizeof(uint16_t));
-	is.read((char*)&T, sizeof(uint16_t));
+	ifs.read((char*)&N, sizeof(uint16_t));
+	ifs.read((char*)&T, sizeof(uint16_t));
 
-	return createByType(N, T, is);
+	return createByType(N, T, ifs);
 }
 
-PartialFunction* PartialFunctionFactory::createByType(uint16_t N, uint16_t T, std::istream& is)
+PartialFunction* PartialFunctionFactory::createByType(uint16_t N, uint16_t T, std::istream& ifs)
 {
 	if (N < 0 || N > 32)
 		throw std::invalid_argument("Invalid value for N!");
@@ -39,32 +42,51 @@ PartialFunction* PartialFunctionFactory::createByType(uint16_t N, uint16_t T, st
 		int32_t* domain = new int32_t[N];
 		int32_t* range = new int32_t[N];
 
-		is.read((char*)domain, sizeof(int32_t) * N);
-		is.read((char*)range, sizeof(int32_t) * N);
+		ifs.read((char*)domain, sizeof(int32_t) * N);
+		ifs.read((char*)range, sizeof(int32_t) * N);
 
-		return createFunctionByCriteria(new DefinedFunctional(domain, range, N));
+		return new PartialFunctionByCriteria<DefinedFunctional>(DefinedFunctional(domain, range, N));
 	}
 	case 1:
 	{
 		int32_t* domain = new int32_t[N];
-		is.read((char*)domain, sizeof(int32_t) * N);
+		ifs.read((char*)domain, sizeof(int32_t) * N);
 
-		return createFunctionByCriteria(new UndefinedFunctional(domain, N));
+		return new PartialFunctionByCriteria<UndefinedFunctional>(UndefinedFunctional(domain, N));
 	}
 	case 2:
 	{
 		int32_t* domain = new int32_t[N];
-		is.read((char*)domain, sizeof(int32_t) * N);
+		ifs.read((char*)domain, sizeof(int32_t) * N);
 
-		return createFunctionByCriteria(new BooleanFunctional(domain, N));
+		return new PartialFunctionByCriteria<BooleanFunctional>(BooleanFunctional(domain, N));
 	}
 	case 3:
-	{
-		//return createMaxFunction(N,is);
-	}
 	case 4:
 	{
-		//return createMinFunction(N, is);
+		PartialFunction** functions = new PartialFunction * [N];
+
+		size_t fileSize = UtilityFuncs::getFileSize(ifs);
+		fileSize -= sizeof(uint16_t) * 2;
+
+		char* buffer = new char[fileSize];
+		ifs.read(buffer, fileSize);
+
+		try
+		{
+			UtilityFuncs::readFunctionsFromFile(functions, buffer, N);
+		}
+		catch (const std::runtime_error& e)
+		{
+			std::cout << "Error: " << e.what() << std::endl;
+		}
+		catch (const std::invalid_argument& e)
+		{
+			std::cout << "Error: " << e.what() << std::endl;
+		}
+
+		delete[] buffer;
+		return createMaxFunction(functions, N);
 	}
 	default:
 		throw std::invalid_argument("Invalid value for T!");
@@ -72,17 +94,12 @@ PartialFunction* PartialFunctionFactory::createByType(uint16_t N, uint16_t T, st
 	}
 }
 
-PartialFunction* PartialFunctionFactory::createFunctionByCriteria(const BaseFunctional* obj)
+PartialFunction* PartialFunctionFactory::createMaxFunction(PartialFunction** funcs, uint16_t N)
 {
-	return new PartialByCriteria(obj);
+	return new MaximumPartial(funcs, N);
 }
 
-PartialFunction* PartialFunctionFactory::createMaxFunction(const BaseFunctional* obj)
+PartialFunction* PartialFunctionFactory::createMinFunction(PartialFunction** funcs, uint16_t N)
 {
-	return nullptr;
-}
-
-PartialFunction* PartialFunctionFactory::createMinFunction(const BaseFunctional* obj)
-{
-	return nullptr;
+	return new MinimumPartial(funcs, N);
 }

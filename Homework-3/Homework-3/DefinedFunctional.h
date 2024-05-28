@@ -4,6 +4,7 @@
 class DefinedFunctional : public BaseFunctional
 {
 public:
+	DefinedFunctional() = default;
 	DefinedFunctional(int32_t* domain, int32_t* range, uint16_t n);
 
 	// Inherited via BaseFunctional

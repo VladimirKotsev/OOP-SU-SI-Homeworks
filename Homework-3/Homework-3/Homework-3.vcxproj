@@ -127,25 +127,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="PartialFunctionCollection.cpp" />
     <ClCompile Include="BooleanFunctional.cpp" />
     <ClCompile Include="DefinedFunctional.cpp" />
+    <ClCompile Include="Extremes.cpp" />
     <ClCompile Include="Homework-3.cpp" />
     <ClCompile Include="MaximumPartial.cpp" />
     <ClCompile Include="MinimumPartial.cpp" />
-    <ClCompile Include="PartialByCriteria.cpp" />
     <ClCompile Include="PartialFunction.cpp" />
+    <ClCompile Include="PartialFunctionFactory.cpp" />
     <ClCompile Include="UndefinedFunctional.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseFunctional.h" />
+    <ClInclude Include="PartialByCriteria.hpp" />
+    <ClInclude Include="PartialFunctionCollection.h" />
     <ClInclude Include="BooleanFunctional.h" />
     <ClInclude Include="DefinedFunctional.h" />
+    <ClInclude Include="Extremes.h" />
     <ClInclude Include="MaximumPartial.h" />
     <ClInclude Include="MinimumPartial.h" />
     <ClInclude Include="Pair.hpp" />
-    <ClInclude Include="PartialByCriteria.h" />
     <ClInclude Include="PartialFunction.h" />
+    <ClInclude Include="PartialFunctionFactory.h" />
     <ClInclude Include="UndefinedFunctional.h" />
+    <ClInclude Include="Utility.h" />
     <ClInclude Include="Vector.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
