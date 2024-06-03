@@ -2,10 +2,9 @@
 #include <sstream>
 
 #include "PartialFunctionFactory.h"
-#include "PartialByCriteria.hpp"
+#include "FunctionalByCriteria.hpp"
 #include "MaximumPartial.h"
 #include "MinimumPartial.h"
-#include "BaseFunctional.h"
 #include "BooleanFunctional.h"
 #include "DefinedFunctional.h"
 #include "UndefinedFunctional.h"
@@ -45,21 +44,21 @@ PartialFunction* PartialFunctionFactory::createByType(uint16_t N, uint16_t T, st
 		ifs.read((char*)domain, sizeof(int32_t) * N);
 		ifs.read((char*)range, sizeof(int32_t) * N);
 
-		return new PartialFunctionByCriteria<DefinedFunctional>(DefinedFunctional(domain, range, N));
+		return new FunctionalByCriteria<DefinedFunctional>(DefinedFunctional(domain, range, N));
 	}
 	case 1:
 	{
 		int32_t* domain = new int32_t[N];
 		ifs.read((char*)domain, sizeof(int32_t) * N);
 
-		return new PartialFunctionByCriteria<UndefinedFunctional>(UndefinedFunctional(domain, N));
+		return new FunctionalByCriteria<UndefinedFunctional>(UndefinedFunctional(domain, N));
 	}
 	case 2:
 	{
 		int32_t* domain = new int32_t[N];
 		ifs.read((char*)domain, sizeof(int32_t) * N);
 
-		return new PartialFunctionByCriteria<BooleanFunctional>(BooleanFunctional(domain, N));
+		return new FunctionalByCriteria<BooleanFunctional>(BooleanFunctional(domain, N));
 	}
 	case 3:
 	case 4:

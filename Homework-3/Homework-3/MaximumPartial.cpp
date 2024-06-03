@@ -1,11 +1,11 @@
 #include "MaximumPartial.h"
 
-MaximumPartial::MaximumPartial(PartialFunction** funcs, int16_t n) : Extremes(funcs, n) { }
+MaximumPartial::MaximumPartial(PartialFunction** funcs, uint16_t n) : Extremes(funcs, n) { }
 
 int32_t MaximumPartial::operator()(int32_t x) const
 {
 	if (!isDefined(x))
-		std::logic_error("Functions not defined at given x!");
+		throw std::logic_error("Functions not defined at given x!");
 
 	int32_t maxRangeValue = container[0].operator()(x);
 
@@ -13,7 +13,6 @@ int32_t MaximumPartial::operator()(int32_t x) const
 	{
 		if (container[i].operator()(x) > maxRangeValue)
 			maxRangeValue = container[i].operator()(x);
-
 	}
 
 	return maxRangeValue;

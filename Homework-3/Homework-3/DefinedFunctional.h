@@ -1,7 +1,7 @@
 #pragma once
-#include "BaseFunctional.h"
+#include "BasePairFunctional.h"
 
-class DefinedFunctional : public BaseFunctional
+class DefinedFunctional : public BasePairFunctional
 {
 public:
 	DefinedFunctional() = default;

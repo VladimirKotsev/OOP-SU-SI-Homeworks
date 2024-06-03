@@ -4,7 +4,7 @@ UndefinedFunctional::UndefinedFunctional(int32_t* domain, uint16_t n)
 {
 	for (size_t i = 0; i < n; i++)
 	{
-		pairs.pushBack(std::move(Pair<int32_t, int32_t>(domain[i], 0)));
+		values.pushBack(domain[i]);
 	}
 
 	delete[] domain;
@@ -12,13 +12,12 @@ UndefinedFunctional::UndefinedFunctional(int32_t* domain, uint16_t n)
 
 const Pair<bool, int32_t>& UndefinedFunctional::operator()(int32_t x) const
 {
-	size_t size = pairs.getSize();
+	size_t size = values.getSize();
 	for (size_t i = 0; i < size; i++)
 	{
-		if (pairs[i].getFirst() == x)
+		if (values[i] == x)
 			return Pair<bool, int32_t>(false, 0);
 	}
 
 	return Pair<bool, int32_t>(true, x);
-
 }

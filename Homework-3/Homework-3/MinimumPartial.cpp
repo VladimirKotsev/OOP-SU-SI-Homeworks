@@ -5,7 +5,7 @@ MinimumPartial::MinimumPartial(PartialFunction** funcs, uint16_t n) : Extremes(f
 int32_t MinimumPartial::operator()(int32_t x) const
 {
 	if (!isDefined(x))
-		std::logic_error("Functions not defined at given x!");
+		throw std::logic_error("Functions not defined at given x!");
 
 	int32_t minRangeValue = container[0].operator()(x);
 

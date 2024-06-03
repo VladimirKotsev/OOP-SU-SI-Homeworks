@@ -1,7 +1,45 @@
 #include <iostream>
 #include "PartialFunctionFactory.h"
-//#include "BooleanFunctional.h"
-#include "PartialByCriteria.hpp"
+#include "BooleanFunctional.h"
+#include "FunctionalByCriteria.hpp"
+
+bool areDigits(const char* str)
+{
+	if (!str)
+		return false;
+
+	while (*str != '\0')
+	{
+		if (*str < '0' || *str > '9')
+			return false;
+
+		str++;
+	}
+
+	return true;
+}
+
+int convertCharToDigit(char ch)
+{
+	if (ch >= '0' && ch <= '9')
+		return ch - '0';
+	return -1;
+}
+
+int32_t parseToNumber(const char* str)
+{
+	//no need for nullptr check!
+	int32_t result = 0;
+	while (*str)
+	{
+		int digit = convertCharToDigit(*str);
+		if (digit == -1)
+			return 0;
+		(result *= 10) += digit;
+		str++;
+	}
+	return result;
+}
 
 int main()
 {
@@ -32,24 +70,36 @@ int main()
 			}
 			catch (const std::exception& e)
 			{
-				std::cout << e.what();
+				std::cout << e.what() << std::endl;
 			}
 		}
 		break;
 	case 2:
 		int32_t x;
+		char buffer[1024];
+		std::cout << "Enter \"exit\" to stop entering values" << std::endl;
 		std::cout << "Enter values for which you want to get the value of the function:" << std::endl;
 		while (true)
 		{
-			std::cin >> x;
-			try
+			std::cin >> buffer;
+			if (areDigits(buffer))
 			{
-				std::cout << "f(" << x << ") = " << (*f)(x) << std::endl;
+				x = parseToNumber(buffer);
+				try
+				{
+					std::cout << "f(" << x << ") = " << (*f)(x) << std::endl;
+				}
+				catch (const std::exception& e)
+				{
+					std::cout << e.what() << std::endl;
+				}
 			}
-			catch (const std::exception& e)
+			else
 			{
-				std::cout << e.what() << std::endl;
+				if (strcmp(buffer, "exit") == 0)
+					break;
 			}
 		}
 		break;
 	}
+}

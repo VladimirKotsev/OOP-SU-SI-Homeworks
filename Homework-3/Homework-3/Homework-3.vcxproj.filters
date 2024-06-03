@@ -56,7 +56,7 @@
     <ClInclude Include="PartialFunction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BaseFunctional.h">
+    <ClInclude Include="BasePairFunctional.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MaximumPartial.h">
@@ -86,7 +86,10 @@
     <ClInclude Include="Utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PartialByCriteria.hpp">
+    <ClInclude Include="FunctionalByCriteria.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseIntegerFunctional.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
