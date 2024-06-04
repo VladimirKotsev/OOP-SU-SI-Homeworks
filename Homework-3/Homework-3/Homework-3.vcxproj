@@ -128,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="PartialFunctionCollection.cpp" />
     <ClCompile Include="BooleanFunctional.cpp" />
     <ClCompile Include="DefinedFunctional.cpp" />
@@ -138,10 +139,12 @@
     <ClCompile Include="PartialFunction.cpp" />
     <ClCompile Include="PartialFunctionFactory.cpp" />
     <ClCompile Include="UndefinedFunctional.cpp" />
+    <ClCompile Include="Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseIntegerFunctional.h" />
     <ClInclude Include="BasePairFunctional.h" />
+    <ClInclude Include="Application.h" />
     <ClInclude Include="FunctionalByCriteria.hpp" />
     <ClInclude Include="PartialFunctionCollection.h" />
     <ClInclude Include="BooleanFunctional.h" />

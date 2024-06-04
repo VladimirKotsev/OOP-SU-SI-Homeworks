@@ -30,7 +30,6 @@ Pair<T, D>::Pair(const T& first, const D& second) : first(first), second(second)
 {
 }
 
-
 template<typename T, typename D>
 Pair<T, D>::Pair(T&& first, D&& second) : first(std::move(first)), second(std::move(second))
 {

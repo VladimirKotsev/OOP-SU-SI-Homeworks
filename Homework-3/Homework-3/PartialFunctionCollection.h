@@ -28,8 +28,6 @@ public:
 	void addPartialFunctional(const PartialFunction& other);
 	//void addPartialFunctional(PartialFunction&& other);
 
-	//int32_t operator()(int32_t x, size_t index) const;
-
 	size_t getSize() const;
 	size_t getCapacity() const;
 

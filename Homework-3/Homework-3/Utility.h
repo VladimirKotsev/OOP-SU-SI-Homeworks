@@ -1,48 +1,21 @@
 #pragma once
-#include <fstream>
 
-namespace UtilityFuncs
+#include <fstream> //!!!!!!!!!!!
+//#include <sstream> //!!!!!!!!!!!
+#include <iostream>
+
+class Utility
 {
-	size_t getFileSize(std::istream& is)
-	{
-		size_t currPos = is.tellg();
+public:
+	static size_t getFileSize(std::istream& is);
 
-		is.seekg(0, std::ios::end);
-		size_t fileSize = is.tellg();
+	static size_t symbolsToSentinel(const char* buffer);
 
-		is.seekg(currPos);
-		return fileSize;
-	}
+	static bool areDigits(const char* str);
 
-	size_t symbolsToSentinel(const char* buffer)
-	{
-		if (!buffer)
-			return 0;
+	static int convertCharToDigit(char ch);
 
-		size_t counter = 0;
-		while (*buffer)
-		{
-			counter++;
-			buffer++;
-		}
+	static int32_t parseToNumber(const char* str);
 
-		buffer++;
-		return counter;
-	}
+};
 
-	void readFunctionsFromFile(PartialFunction** functions, char* buffer, int16_t N)
-	{
-		for (size_t i = 0; i < N; i++)
-		{
-			std::stringstream ss(buffer);
-
-			size_t fileName = UtilityFuncs::symbolsToSentinel(buffer);
-			buffer += fileName + 1;
-			char* currentFileName = new char[fileName];
-
-			ss >> currentFileName;
-
-			functions[i] = PartialFunctionFactory::createFunction(currentFileName);
-		}
-	}
-}

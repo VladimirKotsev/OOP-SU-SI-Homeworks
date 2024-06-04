@@ -13,6 +13,27 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Functinal class files">
+      <UniqueIdentifier>{f656b16e-3a33-421b-85f1-5f0307b41631}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utility files">
+      <UniqueIdentifier>{5f2d2fe3-8dfd-4b96-8809-090c759c8d32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Extremes files">
+      <UniqueIdentifier>{80570cb9-a525-4ac0-997a-928b80375f61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Functional class files">
+      <UniqueIdentifier>{5bc4bb61-07d5-4d9a-8293-9852258ddf39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Extremes files">
+      <UniqueIdentifier>{6562dc83-5d44-4a50-b1b0-840d6e6c6980}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Factory">
+      <UniqueIdentifier>{b0cfb401-8ded-4083-aef6-89d13008f07f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Factory">
+      <UniqueIdentifier>{0c8b4173-5065-4c02-98c4-c062263e0dff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Homework-3.cpp">
@@ -21,76 +42,85 @@
     <ClCompile Include="PartialFunction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MaximumPartial.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MinimumPartial.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DefinedFunctional.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UndefinedFunctional.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BooleanFunctional.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PartialFunctionFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PartialFunctionCollection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BooleanFunctional.cpp">
+      <Filter>Source Files\Functional class files</Filter>
+    </ClCompile>
+    <ClCompile Include="DefinedFunctional.cpp">
+      <Filter>Source Files\Functional class files</Filter>
+    </ClCompile>
+    <ClCompile Include="UndefinedFunctional.cpp">
+      <Filter>Source Files\Functional class files</Filter>
+    </ClCompile>
     <ClCompile Include="Extremes.cpp">
+      <Filter>Source Files\Extremes files</Filter>
+    </ClCompile>
+    <ClCompile Include="MaximumPartial.cpp">
+      <Filter>Source Files\Extremes files</Filter>
+    </ClCompile>
+    <ClCompile Include="MinimumPartial.cpp">
+      <Filter>Source Files\Extremes files</Filter>
+    </ClCompile>
+    <ClCompile Include="PartialFunctionFactory.cpp">
+      <Filter>Source Files\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Vector.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Pair.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PartialFunction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BasePairFunctional.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MaximumPartial.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MinimumPartial.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DefinedFunctional.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UndefinedFunctional.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BooleanFunctional.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PartialFunctionFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PartialFunctionCollection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Extremes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FunctionalByCriteria.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BaseIntegerFunctional.h">
+      <Filter>Header Files\Functinal class files</Filter>
+    </ClInclude>
+    <ClInclude Include="BasePairFunctional.h">
+      <Filter>Header Files\Functinal class files</Filter>
+    </ClInclude>
+    <ClInclude Include="BooleanFunctional.h">
+      <Filter>Header Files\Functinal class files</Filter>
+    </ClInclude>
+    <ClInclude Include="DefinedFunctional.h">
+      <Filter>Header Files\Functinal class files</Filter>
+    </ClInclude>
+    <ClInclude Include="UndefinedFunctional.h">
+      <Filter>Header Files\Functinal class files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector.hpp">
+      <Filter>Header Files\Utility files</Filter>
+    </ClInclude>
+    <ClInclude Include="Pair.hpp">
+      <Filter>Header Files\Utility files</Filter>
+    </ClInclude>
+    <ClInclude Include="Extremes.h">
+      <Filter>Header Files\Extremes files</Filter>
+    </ClInclude>
+    <ClInclude Include="MaximumPartial.h">
+      <Filter>Header Files\Extremes files</Filter>
+    </ClInclude>
+    <ClInclude Include="MinimumPartial.h">
+      <Filter>Header Files\Extremes files</Filter>
+    </ClInclude>
+    <ClInclude Include="PartialFunctionFactory.h">
+      <Filter>Header Files\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility.h">
+      <Filter>Header Files\Utility files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

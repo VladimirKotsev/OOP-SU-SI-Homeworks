@@ -1,14 +1,21 @@
-#include <fstream>
+#include "PartialFunctionFactory.h"
 #include <sstream>
 
-#include "PartialFunctionFactory.h"
-#include "FunctionalByCriteria.hpp"
-#include "MaximumPartial.h"
-#include "MinimumPartial.h"
-#include "BooleanFunctional.h"
-#include "DefinedFunctional.h"
-#include "UndefinedFunctional.h"
-#include "Utility.h"
+void PartialFunctionFactory::readFunctionsFromFile(PartialFunction** functions, char* buffer, int16_t N)
+{
+	for (size_t i = 0; i < N; i++)
+	{
+		std::stringstream ss(buffer);
+
+		size_t fileName = Utility::symbolsToSentinel(buffer);
+		buffer += fileName + 1;
+		char* currentFileName = new char[fileName];
+
+		ss >> currentFileName;
+
+		functions[i] = PartialFunctionFactory::createFunction(currentFileName);
+	}
+}
 
 PartialFunction* PartialFunctionFactory::createFunction(const char* filename)
 {
@@ -28,6 +35,7 @@ PartialFunction* PartialFunctionFactory::createFunction(const char* filename)
 
 	return createByType(N, T, ifs);
 }
+
 
 PartialFunction* PartialFunctionFactory::createByType(uint16_t N, uint16_t T, std::istream& ifs)
 {
@@ -65,7 +73,7 @@ PartialFunction* PartialFunctionFactory::createByType(uint16_t N, uint16_t T, st
 	{
 		PartialFunction** functions = new PartialFunction * [N];
 
-		size_t fileSize = UtilityFuncs::getFileSize(ifs);
+		size_t fileSize = Utility::getFileSize(ifs);
 		fileSize -= sizeof(uint16_t) * 2;
 
 		char* buffer = new char[fileSize];
@@ -73,7 +81,7 @@ PartialFunction* PartialFunctionFactory::createByType(uint16_t N, uint16_t T, st
 
 		try
 		{
-			UtilityFuncs::readFunctionsFromFile(functions, buffer, N);
+			readFunctionsFromFile(functions, buffer, N);
 		}
 		catch (const std::runtime_error& e)
 		{
